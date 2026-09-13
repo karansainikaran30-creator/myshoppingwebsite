@@ -1,0 +1,2674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Checkout - MyShop</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        .checkout-header {
+            background: white;
+            padding: 18px 30px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .checkout-header h2 {
+            margin: 0;
+            color: #2874f0;
+        }
+
+        .secure-text {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .checkout-container {
+            max-width: 1200px;
+            margin: 25px auto;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 25px;
+            padding: 0 15px;
+        }
+
+        .checkout-box,
+        .order-summary {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .checkout-box h2,
+        .order-summary h2 {
+            margin-top: 0;
+        }
+
+        .stock-message {
+            background: #dff7e8;
+            color: #08752d;
+            padding: 13px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #2874f0;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* ADDRESS */
+
+        .address-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .address-title-row label {
+            margin: 0;
+        }
+
+        .location-btn {
+            background: white;
+            color: #2874f0;
+            border: 1px solid #2874f0;
+            padding: 10px 14px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .location-btn:hover {
+            background: #eef5ff;
+        }
+
+        .search-location-btn {
+            width: 100%;
+            background: #2874f0;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .search-location-btn:hover {
+            background: #1258c7;
+        }
+
+        .location-message {
+            font-size: 13px;
+            color: #666;
+            margin-top: 7px;
+        }
+
+        /* GOOGLE MAP MODAL */
+
+        .map-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.55);
+        }
+
+        .map-modal-content {
+            background: white;
+            width: min(950px, 95%);
+            height: min(740px, 94vh);
+            margin: 3vh auto;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .map-header {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            background: white;
+            position: relative;
+            z-index: 5;
+        }
+
+        .map-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .map-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .close-map {
+            border: none;
+            background: transparent;
+            font-size: 28px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        /* GOOGLE AUTOCOMPLETE */
+
+        #autocompleteContainer {
+            margin-top: 12px;
+        }
+
+        #autocompleteContainer gmp-place-autocomplete {
+            width: 100%;
+        }
+
+        .current-location-map-btn {
+            width: 100%;
+            margin-top: 10px;
+            background: white;
+            color: #2874f0;
+            border: 1px solid #2874f0;
+            padding: 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .current-location-map-btn:hover {
+            background: #eef5ff;
+        }
+
+        #googleMap {
+            flex: 1 1 auto;
+            min-height: 200px;
+            height: 280px;
+            width: 100%;
+        }
+
+        .selected-location {
+            padding: 12px 15px;
+            background: #f7f9fc;
+            border-top: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .selected-place-name {
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+        .selected-place-address {
+            color: #555;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .confirm-location-btn {
+            flex: 0 0 auto;
+            display: block !important;
+            width: calc(100% - 30px);
+            min-height: 50px;
+            margin: 10px 15px 15px;
+            padding: 14px;
+            border: none;
+            border-radius: 7px;
+            background: #2874f0;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            z-index: 10000;
+        }
+
+        .confirm-location-btn:hover {
+            background: #1258c7;
+        }
+
+        /* PAYMENT */
+
+        .payment-box {
+            border: 2px solid #0a9d4b;
+            background: #effcf4;
+            padding: 18px;
+            border-radius: 10px;
+        }
+
+        .payment-box label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+        }
+
+        .payment-box input {
+            width: auto;
+        }
+
+        .payment-description {
+            margin: 10px 0 0 34px;
+            color: #555;
+        }
+
+        /* ORDER ITEMS */
+
+        .order-item {
+            display: flex;
+            gap: 14px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-item img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #f5f5f5;
+        }
+
+        .order-item-info {
+            flex: 1;
+        }
+
+        .order-item-info h3 {
+            margin: 0 0 5px;
+            font-size: 17px;
+        }
+
+        .item-price {
+            color: #555;
+        }
+
+        .item-total {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .quantity-controls button {
+            width: 32px;
+            height: 30px;
+            border: 1px solid #ccc;
+            background: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .quantity-number {
+            min-width: 25px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .remove-item {
+            color: #e53935;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 7px;
+            display: inline-block;
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 16px;
+        }
+
+        .total-line {
+            border-top: 2px solid #222;
+            padding-top: 15px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .delivery-info {
+            background: #f1f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 18px;
+            color: #333;
+        }
+
+        .place-order-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 7px;
+            background: #ff9f00;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .place-order-btn:hover {
+            background: #e88f00;
+        }
+
+        .place-order-btn:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
+
+        /* SUCCESS */
+
+        .success-box {
+            display: none;
+            background: #e5f9ed;
+            border: 1px solid #24a148;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .success-box h2 {
+            color: #16803a;
+        }
+
+        .track-btn {
+            display: inline-block;
+            background: #2874f0;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 7px;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            display: none;
+            background: #ffe8e8;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 7px;
+            margin-top: 10px;
+        }
+
+        .google-error {
+            display: none;
+            margin-top: 10px;
+            padding: 12px;
+            background: #fff3cd;
+            color: #856404;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 850px) {
+
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                order: -1;
+            }
+
+            .address-title-row {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .location-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .checkout-header {
+                padding: 15px;
+            }
+
+            .checkout-header h2 {
+                font-size: 18px;
+            }
+
+            .secure-text {
+                font-size: 12px;
+            }
+
+            .checkout-container {
+                margin: 15px auto;
+            }
+
+            .checkout-box,
+            .order-summary {
+                padding: 18px;
+            }
+
+            .map-modal-content {
+                width: 100%;
+                height: min(650px, 90vh);
+                margin: 0;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="checkout-header">
+
+    <h2>🛒 MyShop - Checkout</h2>
+
+    <div class="secure-text">
+        🔒 Secure Checkout
+    </div>
+
+</header>
+
+
+<div class="checkout-container">
+
+    <!-- LEFT SIDE -->
+
+    <div class="checkout-box">
+
+        <h2>Delivery Details</h2>
+
+        <div id="stockMessage" class="stock-message">
+            Checking product stock...
+        </div>
+
+
+        <!-- NAME -->
+
+        <div class="form-group">
+
+            <label for="customerName">
+                Full Name
+            </label>
+
+            <input
+                type="text"
+                id="customerName"
+                placeholder="Enter your full name"
+                maxlength="80"
+            >
+
+        </div>
+
+
+        <!-- MOBILE -->
+
+        <div class="form-group">
+
+            <label for="mobile">
+                Mobile Number
+            </label>
+
+            <input
+                type="tel"
+                id="mobile"
+                placeholder="Enter 10-digit mobile number"
+                maxlength="10"
+                inputmode="numeric"
+            >
+
+        </div>
+
+
+        <!-- ADDRESS -->
+
+        <div class="form-group">
+
+            <div class="address-title-row">
+
+                <label for="address">
+                    📍 Delivery Address
+                </label>
+
+                <button
+                    type="button"
+                    class="location-btn"
+                    onclick="openMapPicker()"
+                >
+                    🗺️ Select Location
+                </button>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="search-location-btn"
+                onclick="openMapPicker()"
+            >
+                🔍 Search your delivery location
+            </button>
+
+
+            <textarea
+                id="address"
+                placeholder="House / Flat No., Street, Area, Landmark..."
+                maxlength="500"
+            ></textarea>
+
+
+            <div
+                id="locationMessage"
+                class="location-message"
+            >
+                📍 Search your address, shop, landmark or area.
+            </div>
+
+        </div>
+
+
+        <!-- HOUSE -->
+
+        <div class="form-group">
+
+            <label for="houseNumber">
+                🏠 House / Flat / Building No.
+            </label>
+
+            <input
+                type="text"
+                id="houseNumber"
+                placeholder="Example: House No. 123, Flat 2A"
+                maxlength="100"
+            >
+
+        </div>
+
+
+        <!-- LANDMARK -->
+
+        <div class="form-group">
+
+            <label for="landmark">
+                📌 Landmark (Optional)
+            </label>
+
+            <input
+                type="text"
+                id="landmark"
+                placeholder="Example: Near Temple, School, Main Road"
+                maxlength="150"
+            >
+
+        </div>
+
+
+        <!-- PINCODE -->
+
+        <div class="form-group">
+
+            <label for="pincode">
+                Pincode
+            </label>
+
+            <input
+                type="text"
+                id="pincode"
+                placeholder="Enter 6-digit pincode"
+                maxlength="6"
+                inputmode="numeric"
+            >
+
+        </div>
+
+
+        <!-- PAYMENT -->
+
+        <div class="form-group">
+
+            <label>
+                💳 Payment Method
+            </label>
+
+            <div class="payment-box">
+
+                <label>
+
+                    <input
+                        type="radio"
+                        name="payment"
+                        value="COD"
+                        checked
+                    >
+
+                    <span>
+                        💵 Cash on Delivery
+                    </span>
+
+                </label>
+
+                <div class="payment-description">
+                    Pay when your order is delivered to you.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="errorMessage"
+            class="error-message"
+        ></div>
+
+
+        <button
+            id="placeOrderBtn"
+            class="place-order-btn"
+            onclick="placeOrder()"
+        >
+            🛍️ Place Order
+        </button>
+
+
+        <!-- SUCCESS -->
+
+        <div
+            id="successBox"
+            class="success-box"
+        >
+
+            <h2>
+                🎉 Order Placed Successfully!
+            </h2>
+
+            <p>
+                Your order has been placed.
+            </p>
+
+            <p>
+                <strong>Order ID:</strong>
+                <span id="successOrderId"></span>
+            </p>
+
+            <p>
+                💵 Payment: Cash on Delivery
+            </p>
+
+            <p>
+                🚚 Expected delivery: Within 7 days
+            </p>
+
+            <a
+                href="/track-order"
+                class="track-btn"
+            >
+                Track My Order
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- RIGHT SIDE -->
+
+    <div class="order-summary">
+
+        <h2>
+            Order Summary
+        </h2>
+
+        <div id="orderItems">
+            Loading cart...
+        </div>
+
+        <div class="summary-line">
+
+            <span>
+                Subtotal
+            </span>
+
+            <span id="subtotal">
+                ₹0.00
+            </span>
+
+        </div>
+
+        <div class="summary-line">
+
+            <span>
+                Delivery
+            </span>
+
+            <span>
+                FREE
+            </span>
+
+        </div>
+
+        <div class="summary-line total-line">
+
+            <span>
+                Total
+            </span>
+
+            <span id="total">
+                ₹0.00
+            </span>
+
+        </div>
+
+
+        <div class="delivery-info">
+
+            🚚 <strong>Delivery Information</strong>
+
+            <br><br>
+
+            Your order will be delivered within
+            <strong>7 days</strong>.
+
+            <br><br>
+
+            💵 Payment Method:
+            <strong>Cash on Delivery</strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- GOOGLE MAP MODAL -->
+
+<div
+    id="mapModal"
+    class="map-modal"
+>
+
+    <div class="map-modal-content">
+
+        <div class="map-header">
+
+            <div class="map-header-top">
+
+                <h2>
+                    📍 Select Delivery Location
+                </h2>
+
+                <button
+                    class="close-map"
+                    onclick="closeMapPicker()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- GOOGLE PLACE AUTOCOMPLETE -->
+
+            <div id="autocompleteContainer"></div>
+
+
+            <button
+                type="button"
+                class="current-location-map-btn"
+                onclick="useCurrentLocationOnMap()"
+            >
+                📍 Use My Current Location
+            </button>
+
+
+            <div
+                id="googleError"
+                class="google-error"
+            >
+                Google Maps could not be loaded. Check your Demo Key and make sure Maps JavaScript API and Places API (New) are enabled.
+            </div>
+
+        </div>
+
+
+        <!-- GOOGLE MAP -->
+
+        <div id="googleMap"></div>
+
+
+        <!-- SELECTED LOCATION -->
+
+        <div class="selected-location">
+
+            <strong>
+                Selected Location:
+            </strong>
+
+            <div
+                id="selectedPlaceName"
+                class="selected-place-name"
+            >
+                No location selected
+            </div>
+
+            <div
+                id="selectedPlaceAddress"
+                class="selected-place-address"
+            >
+                Search for a business, address, landmark or area.
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="confirm-location-btn"
+            onclick="confirmMapLocation()"
+        >
+            ✅ Confirm Location
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- GOOGLE MAPS API KEY -->
+
+<script>
+
+    const GOOGLE_MAPS_API_KEY =
+        "AIzaSyDR9duSWzkESqX_733Fsg7LQ9jDxwD29-g";
+
+</script>
+
+
+<script>
+
+    /* =========================================================
+       CART
+       ========================================================= */
+
+    const CART_STORAGE_KEY = "myShopCart";
+
+    let cart = [];
+
+    let products = [];
+
+
+    /* =========================================================
+       GOOGLE MAP VARIABLES
+       ========================================================= */
+
+    let googleMap = null;
+
+    let googleMarker = null;
+
+    let selectedLat = null;
+
+    let selectedLng = null;
+
+    let selectedAddress = "";
+
+    let selectedPlaceName = "";
+
+    let placeAutocomplete = null;
+
+
+    const DEFAULT_LOCATION = {
+        lat: 26.9124,
+        lng: 75.7873
+    };
+
+
+    /* =========================================================
+       LOAD CART
+       ========================================================= */
+
+    function loadCart() {
+
+        try {
+
+            cart =
+                JSON.parse(
+                    localStorage.getItem(
+                        CART_STORAGE_KEY
+                    )
+                ) || [];
+
+        } catch (error) {
+
+            cart = [];
+
+        }
+
+    }
+
+
+    function saveCart() {
+
+        localStorage.setItem(
+            CART_STORAGE_KEY,
+            JSON.stringify(cart)
+        );
+
+    }
+
+
+    /* =========================================================
+       LOAD PRODUCTS
+       ========================================================= */
+
+    async function loadProducts() {
+
+        try {
+
+            const response =
+                await fetch("/api/products");
+
+
+            products =
+                await response.json();
+
+
+            renderOrderSummary();
+
+            checkStock();
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById(
+                "stockMessage"
+            ).innerText =
+                "Unable to load products. Please refresh the page.";
+
+        }
+
+    }
+
+
+    /* =========================================================
+       ORDER SUMMARY
+       ========================================================= */
+
+    function renderOrderSummary() {
+
+        const container =
+            document.getElementById(
+                "orderItems"
+            );
+
+
+        if (!cart.length) {
+
+            container.innerHTML =
+                "<p>Your cart is empty.</p>";
+
+            updateTotals();
+
+            return;
+
+        }
+
+
+        let html = "";
+
+
+        cart.forEach(
+            (item, index) => {
+
+                const product =
+                    products.find(
+                        p =>
+                            Number(p.id) ===
+                            Number(item.id)
+                    );
+
+
+                if (!product) return;
+
+
+                const quantity =
+                    Number(item.quantity);
+
+
+                const subtotal =
+                    Number(product.price) *
+                    quantity;
+
+
+                html += `
+
+                    <div class="order-item">
+
+                        <img
+                            src="${escapeHtml(product.image || "")}"
+                            alt="${escapeHtml(product.name)}"
+                            onerror="this.style.display='none'"
+                        >
+
+                        <div class="order-item-info">
+
+                            <h3>
+                                ${escapeHtml(product.name)}
+                            </h3>
+
+                            <div class="item-price">
+                                ₹${Number(product.price).toFixed(2)}
+                                × ${quantity}
+                            </div>
+
+                            <div class="quantity-controls">
+
+                                <button
+                                    type="button"
+                                    onclick="changeQuantity(${index}, -1)"
+                                >
+                                    −
+                                </button>
+
+                                <span class="quantity-number">
+                                    ${quantity}
+                                </span>
+
+                                <button
+                                    type="button"
+                                    onclick="changeQuantity(${index}, 1)"
+                                >
+                                    +
+                                </button>
+
+                            </div>
+
+                            <span
+                                class="remove-item"
+                                onclick="removeItem(${index})"
+                            >
+                                🗑️ Remove
+                            </span>
+
+                        </div>
+
+                        <div class="item-total">
+                            ₹${subtotal.toFixed(2)}
+                        </div>
+
+                    </div>
+                `;
+
+            }
+        );
+
+
+        container.innerHTML = html;
+
+        updateTotals();
+
+    }
+
+
+    function updateTotals() {
+
+        let subtotal = 0;
+
+
+        cart.forEach(
+            item => {
+
+                const product =
+                    products.find(
+                        p =>
+                            Number(p.id) ===
+                            Number(item.id)
+                    );
+
+
+                if (product) {
+
+                    subtotal +=
+                        Number(product.price) *
+                        Number(item.quantity);
+
+                }
+
+            }
+        );
+
+
+        document.getElementById(
+            "subtotal"
+        ).innerText =
+            "₹" + subtotal.toFixed(2);
+
+
+        document.getElementById(
+            "total"
+        ).innerText =
+            "₹" + subtotal.toFixed(2);
+
+    }
+
+
+    function changeQuantity(
+        index,
+        change
+    ) {
+
+        if (!cart[index]) return;
+
+
+        const product =
+            products.find(
+                p =>
+                    Number(p.id) ===
+                    Number(cart[index].id)
+            );
+
+
+        if (!product) return;
+
+
+        const newQuantity =
+            Number(cart[index].quantity) +
+            change;
+
+
+        if (newQuantity <= 0) {
+
+            cart.splice(index, 1);
+
+        } else if (
+            newQuantity >
+            Number(product.stock)
+        ) {
+
+            alert(
+                `Only ${product.stock} items are available in stock.`
+            );
+
+            return;
+
+        } else {
+
+            cart[index].quantity =
+                newQuantity;
+
+        }
+
+
+        saveCart();
+
+        renderOrderSummary();
+
+        checkStock();
+
+    }
+
+
+    function removeItem(index) {
+
+        cart.splice(index, 1);
+
+        saveCart();
+
+        renderOrderSummary();
+
+        checkStock();
+
+    }
+
+
+    /* =========================================================
+       STOCK
+       ========================================================= */
+
+    function checkStock() {
+
+        const stockMessage =
+            document.getElementById(
+                "stockMessage"
+            );
+
+
+        if (!cart.length) {
+
+            stockMessage.innerText =
+                "Your cart is empty.";
+
+            stockMessage.style.background =
+                "#fff3cd";
+
+            stockMessage.style.color =
+                "#856404";
+
+            return;
+
+        }
+
+
+        let allAvailable = true;
+
+        let message = "";
+
+
+        cart.forEach(
+            item => {
+
+                const product =
+                    products.find(
+                        p =>
+                            Number(p.id) ===
+                            Number(item.id)
+                    );
+
+
+                if (!product) {
+
+                    allAvailable = false;
+
+                    message +=
+                        "Product not found. ";
+
+                    return;
+
+                }
+
+
+                if (
+                    Number(item.quantity) >
+                    Number(product.stock)
+                ) {
+
+                    allAvailable = false;
+
+                    message +=
+                        `${product.name}: only ${product.stock} available. `;
+
+                }
+
+            }
+        );
+
+
+        if (allAvailable) {
+
+            stockMessage.innerText =
+                "✓ All products are available. Stock is up to date.";
+
+            stockMessage.style.background =
+                "#dff7e8";
+
+            stockMessage.style.color =
+                "#08752d";
+
+        } else {
+
+            stockMessage.innerText =
+                message;
+
+            stockMessage.style.background =
+                "#ffe8e8";
+
+            stockMessage.style.color =
+                "#c62828";
+
+        }
+
+    }
+
+
+    /* =========================================================
+       GOOGLE MAPS LOADING
+       ========================================================= */
+
+    function loadGoogleMaps() {
+
+        if (
+            !GOOGLE_MAPS_API_KEY ||
+            GOOGLE_MAPS_API_KEY ===
+                "YOUR_GOOGLE_MAPS_DEMO_KEY"
+        ) {
+
+            showGoogleError(
+                "Please add your Google Maps Demo Key inside checkout.html."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            window.google &&
+            window.google.maps
+        ) {
+
+            initializeGoogleMap();
+
+            return;
+
+        }
+
+
+        if (
+            document.getElementById(
+                "googleMapsScript"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        const script =
+            document.createElement("script");
+
+
+        script.id =
+            "googleMapsScript";
+
+
+        script.src =
+            "https://maps.googleapis.com/maps/api/js" +
+            "?key=" +
+            encodeURIComponent(
+                GOOGLE_MAPS_API_KEY
+            ) +
+            "&loading=async" +
+            "&libraries=places" +
+            "&callback=initializeGoogleMap";
+
+
+        script.async = true;
+
+        script.defer = true;
+
+
+        script.onerror =
+            function() {
+
+                showGoogleError(
+                    "Google Maps failed to load. Please check your Demo Key."
+                );
+
+            };
+
+
+        document.head.appendChild(
+            script
+        );
+
+    }
+
+
+    /* =========================================================
+       INITIALIZE GOOGLE MAP
+       ========================================================= */
+
+    async function initializeGoogleMap() {
+
+        try {
+
+            const mapsLibrary =
+                await google.maps.importLibrary(
+                    "maps"
+                );
+
+
+            const markerLibrary =
+                await google.maps.importLibrary(
+                    "marker"
+                );
+
+
+            const placesLibrary =
+                await google.maps.importLibrary(
+                    "places"
+                );
+
+
+            const Map =
+                mapsLibrary.Map;
+
+
+            const AdvancedMarkerElement =
+                markerLibrary.AdvancedMarkerElement;
+
+
+            const PlaceAutocompleteElement =
+                placesLibrary.PlaceAutocompleteElement;
+
+
+            googleMap =
+                new Map(
+                    document.getElementById(
+                        "googleMap"
+                    ),
+                    {
+                        center:
+                            DEFAULT_LOCATION,
+
+                        zoom: 13,
+
+                        mapTypeControl: false,
+
+                        streetViewControl: false,
+
+                        fullscreenControl: true
+                    }
+                );
+
+
+            googleMarker =
+                new AdvancedMarkerElement(
+                    {
+                        map: googleMap,
+
+                        position:
+                            DEFAULT_LOCATION
+                    }
+                );
+
+
+            /* GOOGLE AUTOCOMPLETE */
+
+            placeAutocomplete =
+                new PlaceAutocompleteElement(
+                    {
+                        includedRegionCodes: [
+                            "in"
+                        ]
+                    }
+                );
+
+
+            placeAutocomplete.placeholder =
+                "Search shop, business, address, area...";
+
+
+            const container =
+                document.getElementById(
+                    "autocompleteContainer"
+                );
+
+
+            container.innerHTML = "";
+
+
+            container.appendChild(
+                placeAutocomplete
+            );
+
+
+            /* =================================================
+               PLACE SELECTED
+               ================================================= */
+
+            placeAutocomplete.addEventListener(
+                "gmp-select",
+                async function(event) {
+
+                    try {
+
+                        const place =
+                            event.placePrediction
+                                .toPlace();
+
+
+                        await place.fetchFields(
+                            {
+                                fields: [
+                                    "displayName",
+                                    "formattedAddress",
+                                    "location",
+                                    "viewport",
+                                    "addressComponents"
+                                ]
+                            }
+                        );
+
+
+                        if (
+                            !place.location
+                        ) {
+
+                            showGoogleError(
+                                "This place does not have a usable map location."
+                            );
+
+                            return;
+
+                        }
+
+
+                        selectedLat =
+                            place.location.lat();
+
+
+                        selectedLng =
+                            place.location.lng();
+
+
+                        selectedPlaceName =
+                            place.displayName ||
+                            "";
+
+
+                        /*
+                         * IMPORTANT:
+                         *
+                         * Use the exact text from the
+                         * Google autocomplete result.
+                         *
+                         * This prevents Google from changing
+                         * the sequence of the selected address.
+                         */
+
+                        const predictionText =
+                            event.placePrediction &&
+                            event.placePrediction.text
+                                ? event.placePrediction.text.text
+                                : "";
+
+
+                        selectedAddress =
+                            predictionText ||
+                            place.formattedAddress ||
+                            "";
+
+
+                        /*
+                         * Fill address immediately.
+                         */
+
+                        document.getElementById(
+                            "address"
+                        ).value =
+                            selectedAddress;
+
+
+                        /*
+                         * Fill pincode.
+                         */
+
+                        fillPincodeFromComponents(
+                            place.addressComponents
+                        );
+
+
+                        /*
+                         * Move map.
+                         */
+
+                        if (
+                            place.viewport
+                        ) {
+
+                            googleMap.fitBounds(
+                                place.viewport
+                            );
+
+                        } else {
+
+                            googleMap.setCenter(
+                                place.location
+                            );
+
+                            googleMap.setZoom(
+                                17
+                            );
+
+                        }
+
+
+                        /*
+                         * Move marker.
+                         */
+
+                        googleMarker.position =
+                            place.location;
+
+
+                        /*
+                         * Show selected location.
+                         */
+
+                        updateSelectedLocationUI();
+
+
+                        hideGoogleError();
+
+                    } catch (error) {
+
+                        console.error(
+                            "Place selection error:",
+                            error
+                        );
+
+                        showGoogleError(
+                            "Unable to read this place. Please try another result."
+                        );
+
+                    }
+
+                }
+            );
+
+
+            /* =================================================
+               MAP CLICK
+               ================================================= */
+
+            googleMap.addListener(
+                "click",
+                function(event) {
+
+                    if (
+                        !event.latLng
+                    ) return;
+
+
+                    selectedLat =
+                        event.latLng.lat();
+
+
+                    selectedLng =
+                        event.latLng.lng();
+
+
+                    selectedPlaceName =
+                        "Selected map location";
+
+
+                    selectedAddress =
+                        `${selectedLat.toFixed(6)}, ${selectedLng.toFixed(6)}`;
+
+
+                    googleMarker.position =
+                        event.latLng;
+
+
+                    updateSelectedLocationUI();
+
+                }
+            );
+
+
+            hideGoogleError();
+
+
+        } catch (error) {
+
+            console.error(
+                "Google Maps initialization error:",
+                error
+            );
+
+
+            showGoogleError(
+                "Google Maps could not be initialized. Check that Maps JavaScript API and Places API (New) are enabled."
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       OPEN MAP
+       ========================================================= */
+
+    function openMapPicker() {
+
+        document.getElementById(
+            "mapModal"
+        ).style.display =
+            "block";
+
+
+        loadGoogleMaps();
+
+
+        setTimeout(
+            function() {
+
+                if (googleMap) {
+
+                    google.maps.event.trigger(
+                        googleMap,
+                        "resize"
+                    );
+
+
+                    googleMap.setCenter(
+                        selectedLat !== null
+                            ? {
+                                lat: selectedLat,
+                                lng: selectedLng
+                            }
+                            : DEFAULT_LOCATION
+                    );
+
+                }
+
+            },
+            500
+        );
+
+    }
+
+
+    /* =========================================================
+       CLOSE MAP
+       ========================================================= */
+
+    function closeMapPicker() {
+
+        document.getElementById(
+            "mapModal"
+        ).style.display =
+            "none";
+
+    }
+
+
+    /* =========================================================
+       UPDATE SELECTED LOCATION
+       ========================================================= */
+
+    function updateSelectedLocationUI() {
+
+        document.getElementById(
+            "selectedPlaceName"
+        ).innerText =
+            selectedPlaceName ||
+            "Selected Location";
+
+
+        document.getElementById(
+            "selectedPlaceAddress"
+        ).innerText =
+            selectedAddress ||
+            "Location selected.";
+
+    }
+
+
+    /* =========================================================
+       CURRENT LOCATION
+       ========================================================= */
+function useCurrentLocationOnMap() {
+
+    if (!navigator.geolocation) {
+
+        alert(
+            "Your browser does not support location access."
+        );
+
+        return;
+    }
+
+    document.getElementById(
+        "selectedPlaceName"
+    ).innerText =
+        "Getting your current location...";
+
+    document.getElementById(
+        "selectedPlaceAddress"
+    ).innerText =
+        "Please allow location access in your browser.";
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position) {
+
+            const lat =
+                position.coords.latitude;
+
+            const lng =
+                position.coords.longitude;
+
+            selectedLat = lat;
+            selectedLng = lng;
+
+            const location = {
+                lat: lat,
+                lng: lng
+            };
+
+            selectedPlaceName =
+                "Current Location";
+
+            /*
+             * Move map to current location
+             */
+
+            if (googleMap) {
+
+                googleMap.setCenter(location);
+
+                googleMap.setZoom(17);
+
+                if (googleMarker) {
+                    googleMarker.position = location;
+                }
+            }
+
+            /*
+             * Reverse Geocoding
+             * Coordinates → Human-readable address
+             */
+
+            try {
+
+                if (
+                    !window.google ||
+                    !google.maps ||
+                    !google.maps.Geocoder
+                ) {
+
+                    throw new Error(
+                        "Google Geocoder is not available."
+                    );
+                }
+
+                const geocoder =
+                    new google.maps.Geocoder();
+
+                const response =
+                    await geocoder.geocode({
+                        location: location
+                    });
+
+                console.log(
+                    "Reverse Geocoding Response:",
+                    response
+                );
+
+                if (
+                    response.status === "OK" &&
+                    response.results &&
+                    response.results.length > 0
+                ) {
+
+                    /*
+                     * Take the most relevant address
+                     */
+
+                    const result =
+                        response.results[0];
+
+                    selectedAddress =
+                        result.formatted_address || "";
+
+                    /*
+                     * Get pincode
+                     */
+
+                    fillPincodeFromComponents(
+                        result.address_components
+                    );
+
+                    /*
+                     * Try to get a better place name
+                     */
+
+                    const components =
+                        result.address_components || [];
+
+                    let areaName = "";
+
+                    for (
+                        const component of components
+                    ) {
+
+                        const types =
+                            component.types || [];
+
+                        if (
+                            types.includes(
+                                "point_of_interest"
+                            ) ||
+                            types.includes(
+                                "premise"
+                            ) ||
+                            types.includes(
+                                "establishment"
+                            )
+                        ) {
+
+                            areaName =
+                                component.long_name ||
+                                "";
+
+                            break;
+                        }
+                    }
+
+                    if (areaName) {
+
+                        selectedPlaceName =
+                            areaName;
+
+                    } else {
+
+                        selectedPlaceName =
+                            "Current Location";
+
+                    }
+
+                    /*
+                     * Put proper address
+                     * in checkout address box
+                     */
+
+                    document.getElementById(
+                        "address"
+                    ).value =
+                        selectedAddress;
+
+                } else {
+
+                    /*
+                     * Do NOT put coordinates
+                     * into address box.
+                     */
+
+                    selectedAddress =
+                        "Unable to find the address for your current location.";
+
+                    selectedPlaceName =
+                        "Current Location";
+
+                    document.getElementById(
+                        "address"
+                    ).value = "";
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Reverse geocoding error:",
+                    error
+                );
+
+                /*
+                 * Do NOT show:
+                 * 26.xxxxxx, 75.xxxxxx
+                 *
+                 * Instead show a useful message.
+                 */
+
+                selectedAddress =
+                    "Unable to get the address automatically. Please search your location above.";
+
+                selectedPlaceName =
+                    "Current Location";
+
+                document.getElementById(
+                    "address"
+                ).value = "";
+            }
+
+            updateSelectedLocationUI();
+
+        },
+
+        function(error) {
+
+            let message =
+                "Unable to get your location.";
+
+            if (error.code === 1) {
+
+                message =
+                    "Location permission was denied. Please allow location access in your browser.";
+
+            } else if (error.code === 2) {
+
+                message =
+                    "Your location is currently unavailable.";
+
+            } else if (error.code === 3) {
+
+                message =
+                    "Location request timed out. Please try again.";
+            }
+
+            alert(message);
+
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        }
+
+    );
+}
+
+
+    /* =========================================================
+       PINCODE
+       ========================================================= */
+
+    function fillPincodeFromComponents(
+        components
+    ) {
+
+        if (!components) return;
+
+
+        for (
+            const component of components
+        ) {
+
+            const types =
+                component.types || [];
+
+
+            if (
+                types.includes(
+                    "postal_code"
+                )
+            ) {
+
+                /*
+                 * Supports both:
+                 *
+                 * New Google Place API:
+                 * longText / shortText
+                 *
+                 * Geocoder:
+                 * long_name / short_name
+                 */
+
+                const postcode =
+                    component.longText ||
+                    component.shortText ||
+                    component.long_name ||
+                    component.short_name ||
+                    "";
+
+
+                if (
+                    /^[0-9]{6}$/.test(
+                        postcode
+                    )
+                ) {
+
+                    document.getElementById(
+                        "pincode"
+                    ).value =
+                        postcode;
+
+                    return;
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    /* =========================================================
+       CONFIRM LOCATION
+       ========================================================= */
+
+    function confirmMapLocation() {
+
+        if (
+            selectedLat === null ||
+            selectedLng === null
+        ) {
+
+            alert(
+                "Please search and select a location first."
+            );
+
+            return;
+
+        }
+
+
+        const addressBox =
+            document.getElementById(
+                "address"
+            );
+
+
+        if (selectedAddress) {
+
+            addressBox.value =
+                selectedAddress;
+
+        } else {
+
+            addressBox.value =
+                `Selected Location: ${selectedLat.toFixed(6)}, ${selectedLng.toFixed(6)}`;
+
+        }
+
+
+        document.getElementById(
+            "locationMessage"
+        ).innerText =
+            "✓ Location selected successfully. Please add your House/Flat number and Landmark if required.";
+
+
+        closeMapPicker();
+
+    }
+
+
+    /* =========================================================
+       PLACE ORDER
+       ========================================================= */
+
+    async function placeOrder() {
+
+        const button =
+            document.getElementById(
+                "placeOrderBtn"
+            );
+
+
+        const name =
+            document.getElementById(
+                "customerName"
+            ).value.trim();
+
+
+        const mobile =
+            document.getElementById(
+                "mobile"
+            ).value.trim();
+
+
+        const address =
+            document.getElementById(
+                "address"
+            ).value.trim();
+
+
+        const houseNumber =
+            document.getElementById(
+                "houseNumber"
+            ).value.trim();
+
+
+        const landmark =
+            document.getElementById(
+                "landmark"
+            ).value.trim();
+
+
+        const pincode =
+            document.getElementById(
+                "pincode"
+            ).value.trim();
+
+
+        /* VALIDATION */
+
+        if (!name) {
+
+            showError(
+                "Please enter your full name."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !/^[0-9]{10}$/.test(
+                mobile
+            )
+        ) {
+
+            showError(
+                "Please enter a valid 10-digit mobile number."
+            );
+
+            return;
+
+        }
+
+
+        if (!address) {
+
+            showError(
+                "Please select/search your delivery location."
+            );
+
+            return;
+
+        }
+
+
+        if (!houseNumber) {
+
+            showError(
+                "Please enter your House / Flat / Building number."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !/^[0-9]{6}$/.test(
+                pincode
+            )
+        ) {
+
+            showError(
+                "Please enter a valid 6-digit pincode."
+            );
+
+            return;
+
+        }
+
+
+        if (!cart.length) {
+
+            showError(
+                "Your cart is empty."
+            );
+
+            return;
+
+        }
+
+
+        /* FINAL ADDRESS */
+
+        let finalAddress =
+            houseNumber +
+            ", " +
+            address;
+
+
+        if (landmark) {
+
+            finalAddress +=
+                ", Landmark: " +
+                landmark;
+
+        }
+
+
+        /* RE-CHECK STOCK */
+
+        for (
+            const item of cart
+        ) {
+
+            const product =
+                products.find(
+                    p =>
+                        Number(p.id) ===
+                        Number(item.id)
+                );
+
+
+            if (!product) {
+
+                showError(
+                    "One of your products is no longer available."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                Number(item.quantity) >
+                Number(product.stock)
+            ) {
+
+                showError(
+                    `${product.name} has only ${product.stock} items available.`
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        button.disabled = true;
+
+        button.innerText =
+            "Placing Order...";
+
+
+        hideError();
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/orders",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            customer_name:
+                                name,
+
+                            mobile:
+                                mobile,
+
+                            address:
+                                finalAddress,
+
+                            pincode:
+                                pincode,
+
+                            payment_method:
+                                "COD",
+
+                            items:
+                                cart.map(
+                                    item => ({
+                                        id:
+                                            Number(
+                                                item.id
+                                            ),
+
+                                        quantity:
+                                            Number(
+                                                item.quantity
+                                            )
+                                    })
+                                )
+
+                        })
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    "Unable to place order."
+                );
+
+            }
+
+
+            /* SUCCESS */
+
+       // Clear cart
+localStorage.removeItem(CART_STORAGE_KEY);
+cart = [];
+
+// Redirect to separate Order Success page
+window.location.href =
+    "/order-success?order_id=" + data.order_id;
+
+        } catch (error) {
+
+            console.error(error);
+
+
+            showError(
+                error.message ||
+                "Something went wrong while placing your order."
+            );
+
+
+            button.disabled =
+                false;
+
+
+            button.innerText =
+                "🛍️ Place Order";
+
+        }
+
+    }
+
+
+    /* =========================================================
+       ERROR
+       ========================================================= */
+
+    function showError(message) {
+
+        const box =
+            document.getElementById(
+                "errorMessage"
+            );
+
+
+        box.innerText =
+            message;
+
+
+        box.style.display =
+            "block";
+
+
+        box.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+    }
+
+
+    function hideError() {
+
+        document.getElementById(
+            "errorMessage"
+        ).style.display =
+            "none";
+
+    }
+
+
+    /* =========================================================
+       GOOGLE ERROR
+       ========================================================= */
+
+    function showGoogleError(
+        message
+    ) {
+
+        const box =
+            document.getElementById(
+                "googleError"
+            );
+
+
+        if (!box) return;
+
+
+        box.innerText =
+            message;
+
+
+        box.style.display =
+            "block";
+
+    }
+
+
+    function hideGoogleError() {
+
+        const box =
+            document.getElementById(
+                "googleError"
+            );
+
+
+        if (!box) return;
+
+
+        box.style.display =
+            "none";
+
+    }
+
+
+    /* =========================================================
+       ESCAPE HTML
+       ========================================================= */
+
+    function escapeHtml(value) {
+
+        return String(
+            value ?? ""
+        )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+    }
+
+
+    /* =========================================================
+       MODAL OUTSIDE CLICK
+       ========================================================= */
+
+    window.addEventListener(
+        "click",
+        function(event) {
+
+            const modal =
+                document.getElementById(
+                    "mapModal"
+                );
+
+
+            if (
+                event.target === modal
+            ) {
+
+                closeMapPicker();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       START
+       ========================================================= */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            loadCart();
+
+            loadProducts();
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

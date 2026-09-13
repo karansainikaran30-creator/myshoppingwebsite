@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Product - MyShop Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f6fa;
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .back {
+            color: white;
+            text-decoration: none;
+            background: #374151;
+            padding: 10px 16px;
+            border-radius: 6px;
+        }
+
+        .back:hover {
+            background: #4b5563;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .form-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-box h2 {
+            margin-bottom: 25px;
+            color: #111827;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+            background: white;
+        }
+
+        textarea {
+            height: 110px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .category-help {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 6px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #1d4ed8;
+        }
+
+        @media (max-width: 600px) {
+
+            .header {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 19px;
+            }
+
+            .back {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+
+            .container {
+                margin: 25px auto;
+            }
+
+            .form-box {
+                padding: 22px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Header -->
+
+    <div class="header">
+
+        <h1>🛒 MyShop Admin</h1>
+
+        <a href="/admin/dashboard" class="back">
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- Form -->
+
+    <div class="container">
+
+        <div class="form-box">
+
+            <h2>✏️ Edit Product</h2>
+
+            <form method="POST">
+
+                <!-- Product Name -->
+
+                <div class="form-group">
+
+                    <label>
+                        Product Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        value="{{ product['name'] }}"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Price -->
+
+                <div class="form-group">
+
+                    <label>
+                        Price (₹)
+                    </label>
+
+                    <input
+                        type="number"
+                        name="price"
+                        value="{{ product['price'] }}"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Category -->
+
+                <div class="form-group">
+
+                    <label>
+                        Category
+                    </label>
+
+                    <select name="category" required>
+
+                        <option value="Electronics"
+                            {% if product['category'] == 'Electronics' %}selected{% endif %}>
+                            📱 Electronics
+                        </option>
+
+                        <option value="Men"
+                            {% if product['category'] == 'Men' %}selected{% endif %}>
+                            👕 Men
+                        </option>
+
+                        <option value="Women"
+                            {% if product['category'] == 'Women' %}selected{% endif %}>
+                            👗 Women
+                        </option>
+
+                        <option value="Gym"
+                            {% if product['category'] == 'Gym' %}selected{% endif %}>
+                            🏋️ Gym
+                        </option>
+
+                        <option value="Home"
+                            {% if product['category'] == 'Home' %}selected{% endif %}>
+                            🏠 Home
+                        </option>
+
+                    </select>
+
+                    <div class="category-help">
+                        Select the category in which this product should appear.
+                    </div>
+
+                </div>
+
+
+                <!-- Image -->
+
+                <div class="form-group">
+
+                    <label>
+                        Product Image URL
+                    </label>
+
+                    <input
+                        type="url"
+                        name="image"
+                        value="{{ product['image'] or '' }}"
+                        placeholder="https://example.com/product.jpg"
+                    >
+
+                </div>
+
+
+                <!-- Description -->
+
+                <div class="form-group">
+
+                    <label>
+                        Description
+                    </label>
+
+                    <textarea
+                        name="description"
+                        placeholder="Enter product description"
+                    >{{ product['description'] or '' }}</textarea>
+
+                </div>
+
+
+                <!-- Stock -->
+
+                <div class="form-group">
+
+                    <label>
+                        Stock
+                    </label>
+
+                    <input
+                        type="number"
+                        name="stock"
+                        value="{{ product['stock'] }}"
+                        min="0"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Submit -->
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                >
+                    💾 Save Changes
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

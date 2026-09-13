@@ -1,0 +1,2240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MyShop Admin Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            background: #2563eb;
+            color: white;
+            padding: 16px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            color: white;
+            text-decoration: none;
+
+            background: rgba(255,255,255,0.15);
+
+            padding: 9px 15px;
+            border-radius: 7px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            max-width: 1450px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            margin-bottom: 18px;
+        }
+
+
+        /* ================= STATS ================= */
+
+        .stats-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .stat-card {
+
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 3px 12px rgba(0,0,0,0.08);
+        }
+
+
+        .stat-title {
+
+            color: #666;
+
+            font-size: 14px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .stat-value {
+
+            font-size: 30px;
+
+            font-weight: bold;
+        }
+
+
+        .blue {
+            color: #2563eb;
+        }
+
+        .green {
+            color: #16a34a;
+        }
+
+        .orange {
+            color: #ea580c;
+        }
+
+        .red {
+            color: #dc2626;
+        }
+
+
+        /* ================= QUICK ACTIONS ================= */
+
+        .quick-actions {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .quick-action {
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 18px;
+
+            text-decoration: none;
+
+            color: #222;
+
+            box-shadow:
+                0 3px 12px rgba(0,0,0,0.07);
+
+            transition: 0.2s;
+        }
+
+
+        .quick-action:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 18px rgba(0,0,0,0.12);
+        }
+
+
+        .quick-icon {
+
+            font-size: 28px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .quick-title {
+
+            font-weight: bold;
+
+            margin-bottom: 5px;
+        }
+
+
+        .quick-text {
+
+            font-size: 13px;
+
+            color: #777;
+        }
+
+
+        /* ================= TWO COLUMN ================= */
+
+        .two-column {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 20px;
+
+            margin-bottom: 25px;
+        }
+
+
+        /* ================= SECTION ================= */
+
+        .section {
+
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 12px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 3px 12px rgba(0,0,0,0.07);
+        }
+
+
+        .section-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+
+            flex-wrap: wrap;
+        }
+
+
+        /* ================= STATUS SUMMARY ================= */
+
+        .status-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 12px;
+        }
+
+
+        .status-card {
+
+            padding: 15px;
+
+            border-radius: 9px;
+
+            background: #f8fafc;
+
+            border: 1px solid #e5e7eb;
+        }
+
+
+        .status-name {
+
+            font-size: 13px;
+
+            color: #666;
+
+            margin-bottom: 7px;
+        }
+
+
+        .status-count {
+
+            font-size: 25px;
+
+            font-weight: bold;
+        }
+
+
+        /* ================= FILTERS ================= */
+
+        .filters {
+
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+            margin-bottom: 18px;
+        }
+
+
+        .filters input,
+        .filters select {
+
+            padding: 10px 12px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+
+        .filters input {
+
+            min-width: 230px;
+        }
+
+
+        .filters input:focus,
+        .filters select:focus {
+
+            border-color: #2563eb;
+        }
+
+
+        .reset-btn {
+
+            border: none;
+
+            background: #6b7280;
+
+            color: white;
+
+            padding: 10px 15px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+        }
+
+
+        /* ================= BUTTONS ================= */
+
+        .add-product-btn {
+
+            background: #16a34a;
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 10px 16px;
+
+            border-radius: 7px;
+
+            font-weight: bold;
+        }
+
+
+        .view-btn {
+
+            background: #2563eb;
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 7px 11px;
+
+            border-radius: 6px;
+
+            font-size: 13px;
+        }
+
+
+        .edit-btn {
+
+            background: #f59e0b;
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 7px 10px;
+
+            border-radius: 5px;
+
+            font-size: 12px;
+        }
+
+
+        .delete-btn {
+
+            background: #dc2626;
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 7px 10px;
+
+            border-radius: 5px;
+
+            font-size: 12px;
+        }
+
+
+        /* ================= TABLE ================= */
+
+        .table-wrapper {
+
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 850px;
+        }
+
+
+        th,
+        td {
+
+            padding: 13px 12px;
+
+            border-bottom:
+                1px solid #e5e7eb;
+
+            text-align: left;
+
+            white-space: nowrap;
+        }
+
+
+        th {
+
+            background: #f8fafc;
+
+            font-size: 13px;
+
+            color: #475569;
+        }
+
+
+        tr:hover {
+
+            background: #f8fafc;
+        }
+
+
+        /* ================= BADGES ================= */
+
+        .badge {
+
+            display: inline-block;
+
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+
+        .status-placed {
+
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+
+        .status-confirmed {
+
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+
+        .status-shipped {
+
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+
+        .status-out {
+
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+
+        .status-delivered {
+
+            background: #dcfce7;
+            color: #166534;
+        }
+
+
+        .status-cancelled {
+
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+
+        .payment-paid {
+
+            background: #dcfce7;
+            color: #166534;
+        }
+
+
+        .payment-pending {
+
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+
+        .cod-badge {
+
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+
+        /* ================= LOW STOCK ================= */
+
+        .low-stock {
+
+            color: #dc2626;
+
+            font-weight: bold;
+        }
+
+
+        .stock-ok {
+
+            color: #16a34a;
+
+            font-weight: bold;
+        }
+
+
+        .low-stock-label {
+
+            background: #fee2e2;
+
+            color: #b91c1c;
+
+            padding: 4px 7px;
+
+            border-radius: 5px;
+
+            font-size: 11px;
+
+            margin-left: 5px;
+        }
+
+
+        /* ================= PRODUCT ================= */
+
+        .product-img {
+
+            width: 55px;
+
+            height: 55px;
+
+            object-fit: cover;
+
+            border-radius: 7px;
+
+            border: 1px solid #ddd;
+        }
+
+
+        .product-actions {
+
+            display: flex;
+
+            gap: 7px;
+        }
+
+
+        /* ================= EMPTY ================= */
+
+        .empty-message {
+
+            text-align: center;
+
+            padding: 25px;
+
+            color: #777;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1100px) {
+
+            .stats-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .quick-actions {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .two-column {
+
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        @media (max-width: 650px) {
+
+            .navbar {
+
+                padding: 14px 16px;
+            }
+
+
+            .logo {
+
+                font-size: 18px;
+            }
+
+
+            .container {
+
+                padding: 15px;
+            }
+
+
+            .stats-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .quick-actions {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .status-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .section {
+
+                padding: 15px;
+            }
+
+
+            .filters {
+
+                flex-direction: column;
+            }
+
+
+            .filters input,
+            .filters select,
+            .reset-btn {
+
+                width: 100%;
+            }
+
+
+            h1 {
+
+                font-size: 24px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================================================= -->
+<!-- ================= NAVBAR ======================== -->
+<!-- ================================================= -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        🛒 MyShop Admin
+    </div>
+
+
+    <a
+        href="{{ url_for('admin_logout') }}"
+        class="logout-btn"
+    >
+        Logout
+    </a>
+
+</nav>
+
+
+
+<div class="container">
+
+
+    <h1>
+        Admin Dashboard
+    </h1>
+
+
+    <!-- ================================================= -->
+    <!-- ================ CALCULATIONS =================== -->
+    <!-- ================================================= -->
+
+    {% set pending_payments = namespace(value=0) %}
+
+    {% set placed_orders = namespace(value=0) %}
+    {% set confirmed_orders = namespace(value=0) %}
+    {% set shipped_orders = namespace(value=0) %}
+    {% set out_orders = namespace(value=0) %}
+    {% set delivered_orders = namespace(value=0) %}
+    {% set cancelled_orders = namespace(value=0) %}
+
+    {% for order in orders %}
+
+        {% if (order.payment_status or 'Pending') != 'Paid' %}
+            {% set pending_payments.value = pending_payments.value + 1 %}
+        {% endif %}
+
+
+        {% if order.status == 'Order Placed' %}
+            {% set placed_orders.value = placed_orders.value + 1 %}
+
+        {% elif order.status == 'Confirmed' %}
+            {% set confirmed_orders.value = confirmed_orders.value + 1 %}
+
+        {% elif order.status == 'Shipped' %}
+            {% set shipped_orders.value = shipped_orders.value + 1 %}
+
+        {% elif order.status == 'Out for Delivery' %}
+            {% set out_orders.value = out_orders.value + 1 %}
+
+        {% elif order.status == 'Delivered' %}
+            {% set delivered_orders.value = delivered_orders.value + 1 %}
+
+        {% elif order.status == 'Cancelled' %}
+            {% set cancelled_orders.value = cancelled_orders.value + 1 %}
+
+        {% endif %}
+
+    {% endfor %}
+
+
+    <!-- ================================================= -->
+    <!-- ================= MAIN STATS ==================== -->
+    <!-- ================================================= -->
+
+    <div class="stats-grid">
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                📦 Total Products
+            </div>
+
+            <div class="stat-value blue">
+                {{ products|length }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                📊 Total Stock
+            </div>
+
+            <div class="stat-value green">
+                {{ products|sum(attribute='stock') }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                🛒 Total Orders
+            </div>
+
+            <div class="stat-value orange">
+                {{ orders|length }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                💰 Pending Payments
+            </div>
+
+            <div class="stat-value red">
+                {{ pending_payments.value }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- ================= QUICK ACTIONS ================= -->
+    <!-- ================================================= -->
+
+    <div class="quick-actions">
+
+
+        <a
+            href="{{ url_for('add_product') }}"
+            class="quick-action"
+        >
+
+            <div class="quick-icon">
+                ➕
+            </div>
+
+            <div class="quick-title">
+                Add Product
+            </div>
+
+            <div class="quick-text">
+                Add a new product to your shop.
+            </div>
+
+        </a>
+
+
+        <a
+            href="#ordersSection"
+            class="quick-action"
+        >
+
+            <div class="quick-icon">
+                📦
+            </div>
+
+            <div class="quick-title">
+                Manage Orders
+            </div>
+
+            <div class="quick-text">
+                View and manage customer orders.
+            </div>
+
+        </a>
+
+
+        <a
+            href="#notificationsSection"
+            class="quick-action"
+        >
+
+            <div class="quick-icon">
+                🔔
+            </div>
+
+            <div class="quick-title">
+                Notifications
+            </div>
+
+            <div class="quick-text">
+                Check your latest order notifications.
+            </div>
+
+        </a>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- ============== ORDER STATUS SUMMARY ============= -->
+    <!-- ================================================= -->
+
+    <div class="section">
+
+        <div class="section-header">
+
+            <h2>
+                📈 Order Status Summary
+            </h2>
+
+        </div>
+
+
+        <div class="status-grid">
+
+
+            <div class="status-card">
+
+                <div class="status-name">
+                    Order Placed
+                </div>
+
+                <div class="status-count blue">
+                    {{ placed_orders.value }}
+                </div>
+
+            </div>
+
+
+            <div class="status-card">
+
+                <div class="status-name">
+                    Confirmed
+                </div>
+
+                <div class="status-count">
+                    {{ confirmed_orders.value }}
+                </div>
+
+            </div>
+
+
+            <div class="status-card">
+
+                <div class="status-name">
+                    Shipped
+                </div>
+
+                <div class="status-count orange">
+                    {{ shipped_orders.value }}
+                </div>
+
+            </div>
+
+
+            <div class="status-card">
+
+                <div class="status-name">
+                    Out for Delivery
+                </div>
+
+                <div class="status-count orange">
+                    {{ out_orders.value }}
+                </div>
+
+            </div>
+
+
+            <div class="status-card">
+
+                <div class="status-name">
+                    Delivered
+                </div>
+
+                <div class="status-count green">
+                    {{ delivered_orders.value }}
+                </div>
+
+            </div>
+
+
+            <div class="status-card">
+
+                <div class="status-name">
+                    Cancelled
+                </div>
+
+                <div class="status-count red">
+                    {{ cancelled_orders.value }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- ============== LOW STOCK + PAYMENTS ============= -->
+    <!-- ================================================= -->
+
+    <div class="two-column">
+
+
+        <!-- LOW STOCK -->
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <h2>
+                    ⚠️ Low Stock
+                </h2>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Product
+                            </th>
+
+                            <th>
+                                Stock
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% set low_stock_found = namespace(value=false) %}
+
+
+                        {% for product in products %}
+
+                            {% if product.stock <= 5 %}
+
+                                {% set low_stock_found.value = true %}
+
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            {{ product.name }}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+
+                                        <span class="low-stock">
+                                            {{ product.stock }}
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        <a
+                                            href="{{ url_for('edit_product', product_id=product.id) }}"
+                                            class="edit-btn"
+                                        >
+                                            Edit
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+
+                        {% if not low_stock_found.value %}
+
+                            <tr>
+
+                                <td
+                                    colspan="3"
+                                    class="empty-message"
+                                >
+                                    ✅ No low-stock products.
+                                </td>
+
+                            </tr>
+
+                        {% endif %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- PENDING PAYMENTS -->
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <h2>
+                    💰 Pending Payments
+                </h2>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Order
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% set pending_found = namespace(value=false) %}
+
+
+                        {% for order in orders %}
+
+                            {% if (order.payment_status or 'Pending') != 'Paid' %}
+
+                                {% set pending_found.value = true %}
+
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            #{{ order.id }}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        {{ order.customer_name }}
+                                    </td>
+
+                                    <td>
+                                        ₹{{ "%.2f"|format(order.total) }}
+                                    </td>
+
+                                    <td>
+
+                                        <a
+                                            href="{{ url_for('order_details', order_id=order.id) }}"
+                                            class="view-btn"
+                                        >
+                                            View
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+
+                        {% if not pending_found.value %}
+
+                            <tr>
+
+                                <td
+                                    colspan="4"
+                                    class="empty-message"
+                                >
+                                    ✅ No pending payments.
+                                </td>
+
+                            </tr>
+
+                        {% endif %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- ================= ORDERS ======================== -->
+    <!-- ================================================= -->
+
+    <div
+        class="section"
+        id="ordersSection"
+    >
+
+        <div class="section-header">
+
+            <h2>
+                📦 Orders
+            </h2>
+
+        </div>
+
+
+        <div class="filters">
+
+            <input
+                type="text"
+                id="orderSearch"
+                placeholder="🔎 Search order, customer or mobile..."
+                onkeyup="filterOrders()"
+            >
+
+
+            <select
+                id="orderStatusFilter"
+                onchange="filterOrders()"
+            >
+
+                <option value="all">
+                    All Order Status
+                </option>
+
+                <option value="Order Placed">
+                    Order Placed
+                </option>
+
+                <option value="Confirmed">
+                    Confirmed
+                </option>
+
+                <option value="Shipped">
+                    Shipped
+                </option>
+
+                <option value="Out for Delivery">
+                    Out for Delivery
+                </option>
+
+                <option value="Delivered">
+                    Delivered
+                </option>
+
+                <option value="Cancelled">
+                    Cancelled
+                </option>
+
+            </select>
+
+
+            <select
+                id="paymentStatusFilter"
+                onchange="filterOrders()"
+            >
+
+                <option value="all">
+                    All Payment Status
+                </option>
+
+                <option value="Paid">
+                    Paid
+                </option>
+
+                <option value="Pending">
+                    Pending
+                </option>
+
+            </select>
+
+
+            <button
+                class="reset-btn"
+                onclick="resetOrderFilters()"
+                type="button"
+            >
+                Reset
+            </button>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table id="ordersTable">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Order ID
+                        </th>
+
+                        <th>
+                            Customer
+                        </th>
+
+                        <th>
+                            Mobile
+                        </th>
+
+                        <th>
+                            Total
+                        </th>
+
+                        <th>
+                            Payment
+                        </th>
+
+                        <th>
+                            Payment Status
+                        </th>
+
+                        <th>
+                            Order Status
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for order in orders %}
+
+                    <tr
+                        class="order-row"
+                        data-status="{{ order.status }}"
+                        data-payment-status="{{ order.payment_status or 'Pending' }}"
+                        data-search="{{ order.id }} {{ order.customer_name }} {{ order.mobile }}"
+                    >
+
+                        <td>
+                            <strong>
+                                #{{ order.id }}
+                            </strong>
+                        </td>
+
+
+                        <td>
+                            {{ order.customer_name }}
+                        </td>
+
+
+                        <td>
+                            {{ order.mobile }}
+                        </td>
+
+
+                        <td>
+                            ₹{{ "%.2f"|format(order.total) }}
+                        </td>
+
+
+                        <td>
+
+                            <span class="badge cod-badge">
+                                {{ order.payment_method or 'COD' }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if (order.payment_status or 'Pending') == 'Paid' %}
+
+                                <span class="badge payment-paid">
+                                    ✓ Paid
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge payment-pending">
+                                    ⏳ Pending
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if order.status == 'Order Placed' %}
+
+                                <span class="badge status-placed">
+                                    Order Placed
+                                </span>
+
+                            {% elif order.status == 'Confirmed' %}
+
+                                <span class="badge status-confirmed">
+                                    Confirmed
+                                </span>
+
+                            {% elif order.status == 'Shipped' %}
+
+                                <span class="badge status-shipped">
+                                    Shipped
+                                </span>
+
+                            {% elif order.status == 'Out for Delivery' %}
+
+                                <span class="badge status-out">
+                                    Out for Delivery
+                                </span>
+
+                            {% elif order.status == 'Delivered' %}
+
+                                <span class="badge status-delivered">
+                                    Delivered
+                                </span>
+
+                            {% elif order.status == 'Cancelled' %}
+
+                                <span class="badge status-cancelled">
+                                    Cancelled
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge">
+                                    {{ order.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+                            {{ order.order_date }}
+                        </td>
+
+
+                        <td>
+
+                            <a
+                                href="{{ url_for('order_details', order_id=order.id) }}"
+                                class="view-btn"
+                            >
+                                View
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="9"
+                            class="empty-message"
+                        >
+                            No orders found.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div
+            id="noOrdersMessage"
+            class="empty-message"
+            style="display:none;"
+        >
+            No matching orders found.
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- ================ NOTIFICATIONS ================== -->
+    <!-- ================================================= -->
+
+    <div
+        class="section"
+        id="notificationsSection"
+    >
+
+        <div class="section-header">
+
+            <h2>
+                🔔 Notifications
+            </h2>
+
+        </div>
+
+
+        <div class="filters">
+
+            <input
+                type="text"
+                id="notificationSearch"
+                placeholder="🔎 Search notifications..."
+                onkeyup="filterNotifications()"
+            >
+
+
+            <button
+                class="reset-btn"
+                onclick="resetNotificationFilter()"
+                type="button"
+            >
+                Reset
+            </button>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table id="notificationsTable">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Order
+                        </th>
+
+                        <th>
+                            Customer
+                        </th>
+
+                        <th>
+                            Mobile
+                        </th>
+
+                        <th>
+                            Message
+                        </th>
+
+                        <th>
+                            Type
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for notification in notifications %}
+
+                    <tr
+                        class="notification-row"
+                        data-search="
+                            {{ notification.id }}
+                            {{ notification.order_id }}
+                            {{ notification.customer_name }}
+                            {{ notification.mobile }}
+                            {{ notification.message }}
+                            {{ notification.notification_type }}
+                        "
+                    >
+
+                        <td>
+                            #{{ notification.id }}
+                        </td>
+
+
+                        <td>
+
+                            <a
+                                href="{{ url_for('order_details', order_id=notification.order_id) }}"
+                                class="view-btn"
+                            >
+                                #{{ notification.order_id }}
+                            </a>
+
+                        </td>
+
+
+                        <td>
+                            {{ notification.customer_name }}
+                        </td>
+
+
+                        <td>
+                            {{ notification.mobile }}
+                        </td>
+
+
+                        <td>
+                            {{ notification.message }}
+                        </td>
+
+
+                        <td>
+                            {{ notification.notification_type }}
+                        </td>
+
+
+                        <td>
+                            {{ notification.created_at }}
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="empty-message"
+                        >
+                            No notifications found.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div
+            id="noNotificationsMessage"
+            class="empty-message"
+            style="display:none;"
+        >
+            No matching notifications found.
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- ================= PRODUCTS ===================== -->
+    <!-- ================================================= -->
+
+    <div class="section">
+
+        <div class="section-header">
+
+            <h2>
+                🛍️ Products
+            </h2>
+
+
+            <a
+                href="{{ url_for('add_product') }}"
+                class="add-product-btn"
+            >
+                + Add Product
+            </a>
+
+        </div>
+
+
+        <div class="filters">
+
+            <input
+                type="text"
+                id="productSearch"
+                placeholder="🔎 Search product..."
+                onkeyup="filterProducts()"
+            >
+
+
+            <button
+                class="reset-btn"
+                onclick="resetProductFilter()"
+                type="button"
+            >
+                Reset
+            </button>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table id="productsTable">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Image
+                        </th>
+
+                        <th>
+                            Product
+                        </th>
+
+                        <th>
+                            Category
+                        </th>
+
+                        <th>
+                            Price
+                        </th>
+
+                        <th>
+                            Stock
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for product in products %}
+
+                    <tr
+                        class="product-row"
+                        {% if not product['active'] %}style="opacity:0.65;"{% endif %}
+                        data-search="
+                            {{ product.name }}
+                            {{ product.category }}
+                            {{ product.price }}
+                            {{ product.stock }}
+                            {% if product.active %}Active{% else %}Hidden{% endif %}
+                        "
+                    >
+
+                        <td>
+
+                            {% if product.image %}
+
+                            <img
+                                src="{{ product.image }}"
+                                alt="{{ product.name }}"
+                                class="product-img"
+                            >
+
+                            {% else %}
+
+                            <div
+                                class="product-img"
+                                style="
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    background:#f1f5f9;
+                                "
+                            >
+                                📦
+                            </div>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                {{ product.name }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+                            {{ product.category }}
+                        </td>
+
+
+                        <td>
+                            ₹{{ "%.2f"|format(product.price) }}
+                        </td>
+
+
+                        <td>
+
+                            {% if product.stock <= 5 %}
+
+                                <span class="low-stock">
+                                    {{ product.stock }}
+                                </span>
+
+                                <span class="low-stock-label">
+                                    Low Stock
+                                </span>
+
+                            {% else %}
+
+                                <span class="stock-ok">
+                                    {{ product.stock }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {% if product.active %}
+                                <span class="stock-ok">Active</span>
+                            {% else %}
+                                <span class="low-stock">Hidden</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+
+                            <div class="product-actions">
+
+                                <a
+                                    href="{{ url_for('edit_product', product_id=product.id) }}"
+                                    class="edit-btn"
+                                >
+                                    Edit
+                                </a>
+
+                                <form
+                                    action="{{ url_for('toggle_product', product_id=product.id) }}"
+                                    method="POST"
+                                    style="display:inline;"
+                                    onsubmit="return confirm('{% if product.active %}Hide{% else %}Show{% endif %} this product?');"
+                                >
+                                    <button
+                                        type="submit"
+                                        class="{% if product.active %}delete-btn{% else %}edit-btn{% endif %}"
+                                        style="border:none; cursor:pointer;"
+                                    >
+                                        {% if product.active %}Hide{% else %}Show{% endif %}
+                                    </button>
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="empty-message"
+                        >
+                            No products found.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div
+            id="noProductsMessage"
+            class="empty-message"
+            style="display:none;"
+        >
+            No matching products found.
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- ================= JAVASCRIPT ==================== -->
+<!-- ================================================= -->
+
+<script>
+
+
+    /* =================================================
+       ORDER FILTER
+    ================================================= */
+
+    function filterOrders() {
+
+        const search =
+            document
+                .getElementById("orderSearch")
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        const status =
+            document
+                .getElementById("orderStatusFilter")
+                .value;
+
+
+        const payment =
+            document
+                .getElementById("paymentStatusFilter")
+                .value;
+
+
+        const rows =
+            document.querySelectorAll(".order-row");
+
+
+        let visibleCount = 0;
+
+
+        rows.forEach(function(row) {
+
+            const text =
+                row.dataset.search.toLowerCase();
+
+
+            const rowStatus =
+                row.dataset.status;
+
+
+            const rowPayment =
+                row.dataset.paymentStatus;
+
+
+            const matchesSearch =
+                text.includes(search);
+
+
+            const matchesStatus =
+                status === "all" ||
+                rowStatus === status;
+
+
+            const matchesPayment =
+                payment === "all" ||
+                rowPayment === payment;
+
+
+            if (
+                matchesSearch &&
+                matchesStatus &&
+                matchesPayment
+            ) {
+
+                row.style.display = "";
+
+                visibleCount++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        document
+            .getElementById("noOrdersMessage")
+            .style.display =
+                visibleCount === 0
+                    ? "block"
+                    : "none";
+    }
+
+
+
+    /* =================================================
+       RESET ORDER FILTER
+    ================================================= */
+
+    function resetOrderFilters() {
+
+        document
+            .getElementById("orderSearch")
+            .value = "";
+
+
+        document
+            .getElementById("orderStatusFilter")
+            .value = "all";
+
+
+        document
+            .getElementById("paymentStatusFilter")
+            .value = "all";
+
+
+        filterOrders();
+    }
+
+
+
+    /* =================================================
+       NOTIFICATION FILTER
+    ================================================= */
+
+    function filterNotifications() {
+
+        const search =
+            document
+                .getElementById("notificationSearch")
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        const rows =
+            document.querySelectorAll(
+                ".notification-row"
+            );
+
+
+        let visibleCount = 0;
+
+
+        rows.forEach(function(row) {
+
+            const text =
+                row.dataset.search.toLowerCase();
+
+
+            if (text.includes(search)) {
+
+                row.style.display = "";
+
+                visibleCount++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        document
+            .getElementById("noNotificationsMessage")
+            .style.display =
+                visibleCount === 0
+                    ? "block"
+                    : "none";
+    }
+
+
+
+    /* =================================================
+       RESET NOTIFICATION FILTER
+    ================================================= */
+
+    function resetNotificationFilter() {
+
+        document
+            .getElementById("notificationSearch")
+            .value = "";
+
+
+        filterNotifications();
+    }
+
+
+
+    /* =================================================
+       PRODUCT FILTER
+    ================================================= */
+
+    function filterProducts() {
+
+        const search =
+            document
+                .getElementById("productSearch")
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        const rows =
+            document.querySelectorAll(
+                ".product-row"
+            );
+
+
+        let visibleCount = 0;
+
+
+        rows.forEach(function(row) {
+
+            const text =
+                row.dataset.search.toLowerCase();
+
+
+            if (text.includes(search)) {
+
+                row.style.display = "";
+
+                visibleCount++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        document
+            .getElementById("noProductsMessage")
+            .style.display =
+                visibleCount === 0
+                    ? "block"
+                    : "none";
+    }
+
+
+
+    /* =================================================
+       RESET PRODUCT FILTER
+    ================================================= */
+
+    function resetProductFilter() {
+
+        document
+            .getElementById("productSearch")
+            .value = "";
+
+
+        filterProducts();
+    }
+
+
+</script>
+
+
+</body>
+</html>

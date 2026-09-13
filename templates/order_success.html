@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Order Successful - MyShop</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f5f6fa;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .success-card {
+            width: 100%;
+            max-width: 600px;
+
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 45px 30px;
+
+            text-align: center;
+
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+        }
+
+        .success-icon {
+            width: 85px;
+            height: 85px;
+
+            margin: 0 auto 20px;
+
+            border-radius: 50%;
+
+            background: #dcfce7;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 45px;
+        }
+
+        h1 {
+            color: #16a34a;
+
+            font-size: 30px;
+
+            margin-bottom: 12px;
+        }
+
+        .thank-you {
+            color: #555;
+
+            font-size: 16px;
+
+            line-height: 1.6;
+
+            margin-bottom: 25px;
+        }
+
+        .order-box {
+            background: #f8fafc;
+
+            border: 1px solid #e2e8f0;
+
+            border-radius: 12px;
+
+            padding: 20px;
+
+            margin: 20px 0;
+        }
+
+        .order-id {
+            font-size: 24px;
+
+            font-weight: bold;
+
+            color: #111827;
+
+            margin-bottom: 10px;
+        }
+
+        .delivery {
+            color: #555;
+
+            font-size: 15px;
+
+            margin-top: 8px;
+        }
+
+        .cod {
+            margin-top: 15px;
+
+            padding: 12px;
+
+            background: #fff7ed;
+
+            border-radius: 8px;
+
+            color: #9a3412;
+
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: flex;
+
+            gap: 12px;
+
+            justify-content: center;
+
+            flex-wrap: wrap;
+
+            margin-top: 25px;
+        }
+
+        .btn {
+            display: inline-block;
+
+            text-decoration: none;
+
+            padding: 13px 22px;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
+        }
+
+        .home-btn {
+            background: #2563eb;
+
+            color: white;
+        }
+
+        .home-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .track-btn {
+            background: #16a34a;
+
+            color: white;
+        }
+
+        .track-btn:hover {
+            background: #15803d;
+        }
+
+        @media (max-width: 600px) {
+
+            .success-card {
+                padding: 35px 20px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="success-card">
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h1>
+            Order Placed Successfully!
+        </h1>
+
+        <p class="thank-you">
+            Thank you for shopping with MyShop.
+            Your order has been received successfully.
+        </p>
+
+        <div class="order-box">
+
+            <div class="order-id" id="orderId">
+                Order ID: #
+            </div>
+
+            <div class="delivery">
+                📦 Expected Delivery: Within 7 Days
+            </div>
+
+            <div class="cod">
+                💵 Payment Method: Cash on Delivery
+            </div>
+
+        </div>
+
+        <div class="buttons">
+
+            <a href="/track-order" class="btn track-btn">
+                📦 Track Order
+            </a>
+
+            <a href="/" class="btn home-btn">
+                🏠 Back to Home
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        // Get Order ID from URL
+        const params = new URLSearchParams(window.location.search);
+
+        const orderId = params.get("order_id");
+
+        if (orderId) {
+
+            document.getElementById("orderId").textContent =
+                "Order ID: #" + orderId;
+
+        }
+
+    </script>
+
+</body>
+
+</html>

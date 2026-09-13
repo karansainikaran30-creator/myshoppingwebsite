@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Order #{{ order.id }} - MyShop Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f6fa;
+            color: #222;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            background: #2874f0;
+            color: white;
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            font-size: 23px;
+        }
+
+        .back-btn {
+            background: white;
+            color: #2874f0;
+            padding: 9px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background: #eef4ff;
+        }
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .page-title {
+            margin-bottom: 25px;
+        }
+
+        .page-title h1 {
+            margin-bottom: 7px;
+        }
+
+        .page-title p {
+            color: #777;
+        }
+
+        /* ================= ORDER HEADER ================= */
+
+        .order-header {
+            background: white;
+            padding: 22px 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .order-header h1 {
+            font-size: 25px;
+            margin-bottom: 6px;
+        }
+
+        .order-date {
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* ================= STATUS BADGES ================= */
+
+        .status-badge {
+            display: inline-block;
+            padding: 9px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .status-placed {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-confirmed {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-shipped {
+            background: #ede7f6;
+            color: #512da8;
+        }
+
+        .status-out {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status-delivered {
+            background: #e8f5e9;
+            color: #1b5e20;
+        }
+
+        .status-cancelled {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        /* ================= GRID ================= */
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* ================= CARD ================= */
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        /* ================= CUSTOMER DETAILS ================= */
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #777;
+            font-weight: bold;
+        }
+
+        .detail-value {
+            text-align: right;
+            max-width: 65%;
+            word-break: break-word;
+        }
+
+        /* ================= STATUS CARD ================= */
+
+        .current-status-box {
+            margin-bottom: 20px;
+        }
+
+        .current-status-label {
+            color: #777;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .status-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .status-form select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+            background: white;
+        }
+
+        .update-btn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            border: none;
+            border-radius: 7px;
+            background: #2874f0;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .update-btn:hover {
+            background: #1257c7;
+        }
+
+        /* ================= STATUS TIMELINE ================= */
+
+        .timeline {
+            margin-top: 25px;
+        }
+
+        .timeline-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .timeline-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 13px;
+            color: #999;
+        }
+
+        .timeline-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ddd;
+            flex-shrink: 0;
+        }
+
+        .timeline-step.active {
+            color: #2874f0;
+            font-weight: bold;
+        }
+
+        .timeline-step.active .timeline-dot {
+            background: #2874f0;
+        }
+
+        .timeline-step.cancelled {
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        .timeline-step.cancelled .timeline-dot {
+            background: #c62828;
+        }
+
+        /* ================= PAYMENT ================= */
+
+        .payment-card {
+            border-left: 5px solid #ff9800;
+        }
+
+        .payment-method {
+            display: inline-block;
+            background: #fff3e0;
+            color: #e65100;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .payment-pending {
+            display: inline-block;
+            background: #fff8e1;
+            color: #f57f17;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .payment-paid {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .payment-note {
+            margin-top: 15px;
+            padding: 12px;
+            background: #fff8e1;
+            border-radius: 8px;
+            color: #795548;
+            font-size: 14px;
+        }
+
+        .paid-btn {
+            width: 100%;
+            margin-top: 18px;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #2e7d32;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .paid-btn:hover {
+            background: #1b5e20;
+        }
+
+        .paid-message {
+            margin-top: 15px;
+            padding: 12px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* ================= PRODUCTS ================= */
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .products-table th {
+            background: #f1f3f6;
+            padding: 13px;
+            text-align: left;
+        }
+
+        .products-table td {
+            padding: 13px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .products-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .subtotal {
+            font-weight: bold;
+        }
+
+        /* ================= TOTAL ================= */
+
+        .total-box {
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 2px solid #eee;
+
+            display: flex;
+            justify-content: space-between;
+
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .total-amount {
+            color: #2874f0;
+        }
+
+        /* ================= FULL WIDTH ================= */
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* ================= CANCELLED WARNING ================= */
+
+        .cancelled-warning {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 5px solid #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 750px) {
+
+            .navbar {
+                padding: 15px;
+            }
+
+            .navbar h2 {
+                font-size: 18px;
+            }
+
+            .back-btn {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+
+            .container {
+                width: 94%;
+                margin: 20px auto;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .detail-value {
+                text-align: left;
+                max-width: 100%;
+            }
+
+            .products-table {
+                min-width: 650px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .total-box {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <div class="navbar">
+
+        <h2>
+            🛒 MyShop Admin
+        </h2>
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="back-btn"
+        >
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <div class="container">
+
+        <!-- ================= ORDER HEADER ================= -->
+
+        <div class="order-header">
+
+            <div>
+
+                <h1>
+                    Order #{{ order.id }}
+                </h1>
+
+                <p class="order-date">
+                    Placed on {{ order.order_date }}
+                </p>
+
+            </div>
+
+            <div>
+
+                {% if order.status == "Order Placed" %}
+
+                    <span class="status-badge status-placed">
+                        📦 Order Placed
+                    </span>
+
+                {% elif order.status == "Confirmed" %}
+
+                    <span class="status-badge status-confirmed">
+                        ✅ Confirmed
+                    </span>
+
+                {% elif order.status == "Shipped" %}
+
+                    <span class="status-badge status-shipped">
+                        🚚 Shipped
+                    </span>
+
+                {% elif order.status == "Out for Delivery" %}
+
+                    <span class="status-badge status-out">
+                        🛵 Out for Delivery
+                    </span>
+
+                {% elif order.status == "Delivered" %}
+
+                    <span class="status-badge status-delivered">
+                        🎉 Delivered
+                    </span>
+
+                {% elif order.status == "Cancelled" %}
+
+                    <span class="status-badge status-cancelled">
+                        ❌ Cancelled
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= CANCELLED WARNING ================= -->
+
+        {% if order.status == "Cancelled" %}
+
+            <div class="cancelled-warning">
+                ⚠️ This order has been cancelled.
+                Please do not process this order for delivery.
+            </div>
+
+        {% endif %}
+
+
+        <div class="grid">
+
+            <!-- ================= CUSTOMER DETAILS ================= -->
+
+            <div class="card">
+
+                <h2>
+                    👤 Customer Details
+                </h2>
+
+                <div class="detail-row">
+
+                    <span class="detail-label">
+                        Name
+                    </span>
+
+                    <span class="detail-value">
+                        {{ order.customer_name }}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span class="detail-label">
+                        Mobile
+                    </span>
+
+                    <span class="detail-value">
+                        {{ order.mobile }}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span class="detail-label">
+                        Address
+                    </span>
+
+                    <span class="detail-value">
+                        {{ order.address }}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span class="detail-label">
+                        Pincode
+                    </span>
+
+                    <span class="detail-value">
+                        {{ order.pincode }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= ORDER STATUS ================= -->
+
+            <div class="card">
+
+                <h2>
+                    🚚 Order Management
+                </h2>
+
+                <div class="current-status-box">
+
+                    <span class="current-status-label">
+                        Current Status
+                    </span>
+
+                    {% if order.status == "Order Placed" %}
+
+                        <span class="status-badge status-placed">
+                            📦 Order Placed
+                        </span>
+
+                    {% elif order.status == "Confirmed" %}
+
+                        <span class="status-badge status-confirmed">
+                            ✅ Confirmed
+                        </span>
+
+                    {% elif order.status == "Shipped" %}
+
+                        <span class="status-badge status-shipped">
+                            🚚 Shipped
+                        </span>
+
+                    {% elif order.status == "Out for Delivery" %}
+
+                        <span class="status-badge status-out">
+                            🛵 Out for Delivery
+                        </span>
+
+                    {% elif order.status == "Delivered" %}
+
+                        <span class="status-badge status-delivered">
+                            🎉 Delivered
+                        </span>
+
+                    {% elif order.status == "Cancelled" %}
+
+                        <span class="status-badge status-cancelled">
+                            ❌ Cancelled
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- STATUS UPDATE FORM -->
+
+                <form
+                    class="status-form"
+                    method="POST"
+                    action="{{ url_for('update_order_status', order_id=order.id) }}"
+                    onsubmit="return confirmStatusChange();"
+                >
+
+                    <label for="status">
+                        Change Order Status
+                    </label>
+
+                    <select
+                        name="status"
+                        id="status"
+                        required
+                    >
+
+                        <option
+                            value="Order Placed"
+                            {% if order.status == "Order Placed" %}selected{% endif %}
+                        >
+                            📦 Order Placed
+                        </option>
+
+                        <option
+                            value="Confirmed"
+                            {% if order.status == "Confirmed" %}selected{% endif %}
+                        >
+                            ✅ Confirmed
+                        </option>
+
+                        <option
+                            value="Shipped"
+                            {% if order.status == "Shipped" %}selected{% endif %}
+                        >
+                            🚚 Shipped
+                        </option>
+
+                        <option
+                            value="Out for Delivery"
+                            {% if order.status == "Out for Delivery" %}selected{% endif %}
+                        >
+                            🛵 Out for Delivery
+                        </option>
+
+                        <option
+                            value="Delivered"
+                            {% if order.status == "Delivered" %}selected{% endif %}
+                        >
+                            🎉 Delivered
+                        </option>
+
+                        <option
+                            value="Cancelled"
+                            {% if order.status == "Cancelled" %}selected{% endif %}
+                        >
+                            ❌ Cancelled
+                        </option>
+
+                    </select>
+
+
+                    <button
+                        type="submit"
+                        class="update-btn"
+                    >
+                        🔄 Update Order Status
+                    </button>
+
+                </form>
+
+
+                <!-- STATUS TIMELINE -->
+
+                <div class="timeline">
+
+                    <div class="timeline-title">
+                        Order Progress
+                    </div>
+
+                    <div
+                        class="timeline-step
+                        {% if order.status in ['Order Placed', 'Confirmed', 'Shipped', 'Out for Delivery', 'Delivered'] %}
+                        active
+                        {% endif %}"
+                    >
+
+                        <span class="timeline-dot"></span>
+
+                        Order Placed
+
+                    </div>
+
+
+                    <div
+                        class="timeline-step
+                        {% if order.status in ['Confirmed', 'Shipped', 'Out for Delivery', 'Delivered'] %}
+                        active
+                        {% endif %}"
+                    >
+
+                        <span class="timeline-dot"></span>
+
+                        Confirmed
+
+                    </div>
+
+
+                    <div
+                        class="timeline-step
+                        {% if order.status in ['Shipped', 'Out for Delivery', 'Delivered'] %}
+                        active
+                        {% endif %}"
+                    >
+
+                        <span class="timeline-dot"></span>
+
+                        Shipped
+
+                    </div>
+
+
+                    <div
+                        class="timeline-step
+                        {% if order.status in ['Out for Delivery', 'Delivered'] %}
+                        active
+                        {% endif %}"
+                    >
+
+                        <span class="timeline-dot"></span>
+
+                        Out for Delivery
+
+                    </div>
+
+
+                    <div
+                        class="timeline-step
+                        {% if order.status == 'Delivered' %}
+                        active
+                        {% endif %}"
+                    >
+
+                        <span class="timeline-dot"></span>
+
+                        Delivered
+
+                    </div>
+
+
+                    {% if order.status == "Cancelled" %}
+
+                        <div class="timeline-step cancelled">
+
+                            <span class="timeline-dot"></span>
+
+                            Order Cancelled
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= PAYMENT ================= -->
+
+            <div class="card payment-card full-width">
+
+                <h2>
+                    💳 Payment Information
+                </h2>
+
+
+                <div class="detail-row">
+
+                    <span class="detail-label">
+                        Payment Method
+                    </span>
+
+                    <span class="detail-value">
+
+                        {% if order.payment_method == "COD" or not order.payment_method %}
+
+                            <span class="payment-method">
+                                💵 Cash on Delivery
+                            </span>
+
+                        {% else %}
+
+                            <span class="payment-method">
+                                {{ order.payment_method }}
+                            </span>
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span class="detail-label">
+                        Payment Status
+                    </span>
+
+                    <span class="detail-value">
+
+                        {% if order.payment_status == "Paid" %}
+
+                            <span class="payment-paid">
+                                ✅ Paid
+                            </span>
+
+                        {% else %}
+
+                            <span class="payment-pending">
+                                ⏳ Pending
+                            </span>
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                {% if order.payment_status == "Paid" %}
+
+                    <div class="paid-message">
+                        ✅ Payment has already been received.
+                    </div>
+
+                {% else %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('mark_payment_paid', order_id=order.id) }}"
+                        onsubmit="return confirm('Are you sure the customer has paid this COD order?');"
+                    >
+
+                        <button
+                            type="submit"
+                            class="paid-btn"
+                        >
+                            ✅ Mark Payment as Paid
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+
+                <div class="payment-note">
+
+                    💡 <strong>COD:</strong>
+
+                    Customer pays the order amount when the order is delivered.
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= ORDERED PRODUCTS ================= -->
+
+            <div class="card full-width">
+
+                <h2>
+                    📦 Ordered Products
+                </h2>
+
+
+                <div class="table-container">
+
+                    <table class="products-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Product
+                                </th>
+
+                                <th>
+                                    Price
+                                </th>
+
+                                <th>
+                                    Quantity
+                                </th>
+
+                                <th>
+                                    Subtotal
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for item in items %}
+
+                            <tr>
+
+                                <td>
+                                    {{ item.product_name }}
+                                </td>
+
+                                <td>
+                                    ₹{{ "%.2f"|format(item.price) }}
+                                </td>
+
+                                <td>
+                                    {{ item.quantity }}
+                                </td>
+
+                                <td class="subtotal">
+                                    ₹{{ "%.2f"|format(item.subtotal) }}
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- TOTAL -->
+
+                <div class="total-box">
+
+                    <span>
+                        Order Total
+                    </span>
+
+                    <span class="total-amount">
+                        ₹{{ "%.2f"|format(order.total) }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= ORDER INFORMATION ================= -->
+
+            <div class="card full-width">
+
+                <h2>
+                    📋 Order Information
+                </h2>
+
+
+                <div class="detail-row">
+
+                    <span class="detail-label">
+                        Order ID
+                    </span>
+
+                    <span class="detail-value">
+                        #{{ order.id }}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span class="detail-label">
+                        Order Date
+                    </span>
+
+                    <span class="detail-value">
+                        {{ order.order_date }}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span class="detail-label">
+                        Delivery
+                    </span>
+
+                    <span class="detail-value">
+                        Within 7 days
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span class="detail-label">
+                        Payment
+                    </span>
+
+                    <span class="detail-value">
+
+                        {% if order.payment_method == "COD" or not order.payment_method %}
+
+                            Cash on Delivery
+
+                        {% else %}
+
+                            {{ order.payment_method }}
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span class="detail-label">
+                        Payment Status
+                    </span>
+
+                    <span class="detail-value">
+
+                        {% if order.payment_status == "Paid" %}
+
+                            <span class="payment-paid">
+                                ✅ Paid
+                            </span>
+
+                        {% else %}
+
+                            <span class="payment-pending">
+                                ⏳ Pending
+                            </span>
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        function confirmStatusChange() {
+
+            const status =
+                document.getElementById("status").value;
+
+            return confirm(
+                "Are you sure you want to change the order status to: "
+                + status
+                + "?"
+            );
+        }
+
+    </script>
+
+</body>
+</html>
