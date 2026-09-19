@@ -70,18 +70,6 @@ ALLOWED_ORDER_STATUSES = [
 
 create_tables()
 
-# Add active/hidden status to existing product tables if needed.
-# Existing products become active by default.
-connection = get_db_connection()
-try:
-    product_columns = connection.execute("PRAGMA table_info(products)").fetchall()
-    product_column_names = [column["name"] for column in product_columns]
-    if "active" not in product_column_names:
-        connection.execute("ALTER TABLE products ADD COLUMN active INTEGER DEFAULT 1")
-        connection.commit()
-finally:
-    connection.close()
-
 
 # ============================================================
 # HELPER FUNCTIONS
@@ -148,7 +136,7 @@ def create_notification(
             message,
             notification_type
         )
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s)
     """, (
         order["id"],
         order["customer_name"],
@@ -214,6 +202,7 @@ def get_products():
         products = connection.execute("""
             SELECT *
             FROM products
+            WHERE active = 1
             ORDER BY id DESC
         """).fetchall()
 
@@ -376,7 +365,7 @@ def place_order():
             product = connection.execute("""
                 SELECT *
                 FROM products
-                WHERE id = ?
+                WHERE id = %s
                 AND active = 1
             """, (
                 product_id,
@@ -437,7 +426,8 @@ def place_order():
                 payment_method,
                 payment_status
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id
         """, (
             customer_name,
             mobile,
@@ -450,7 +440,7 @@ def place_order():
         ))
 
 
-        order_id = cursor.lastrowid
+        order_id = cursor.fetchone()["id"]
 
 
         # ----------------------------------------------------
@@ -468,7 +458,7 @@ def place_order():
                     quantity,
                     subtotal
                 )
-                VALUES (?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s)
             """, (
                 order_id,
                 item["product_id"],
@@ -481,9 +471,9 @@ def place_order():
 
             connection.execute("""
                 UPDATE products
-                SET stock = stock - ?
-                WHERE id = ?
-                AND stock >= ?
+                SET stock = stock - %s
+                WHERE id = %s
+                AND stock >= %s
             """, (
                 item["quantity"],
                 item["product_id"],
@@ -512,7 +502,7 @@ def place_order():
                 message,
                 notification_type
             )
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s)
         """, (
             order_id,
             customer_name,
@@ -611,8 +601,8 @@ def api_track_order():
         order = connection.execute("""
             SELECT *
             FROM orders
-            WHERE id = ?
-            AND mobile = ?
+            WHERE id = %s
+            AND mobile = %s
         """, (
             order_id,
             mobile
@@ -635,7 +625,7 @@ def api_track_order():
         order_items = connection.execute("""
             SELECT *
             FROM order_items
-            WHERE order_id = ?
+            WHERE order_id = %s
             ORDER BY id ASC
         """, (
             order_id,
@@ -649,7 +639,7 @@ def api_track_order():
         notifications = connection.execute("""
             SELECT *
             FROM notifications
-            WHERE order_id = ?
+            WHERE order_id = %s
             ORDER BY id DESC
         """, (
             order_id,
@@ -816,7 +806,7 @@ def order_details(order_id):
         order = connection.execute("""
             SELECT *
             FROM orders
-            WHERE id = ?
+            WHERE id = %s
         """, (
             order_id,
         )).fetchone()
@@ -834,7 +824,7 @@ def order_details(order_id):
         items = connection.execute("""
             SELECT *
             FROM order_items
-            WHERE order_id = ?
+            WHERE order_id = %s
             ORDER BY id ASC
         """, (
             order_id,
@@ -848,7 +838,7 @@ def order_details(order_id):
         notifications = connection.execute("""
             SELECT *
             FROM notifications
-            WHERE order_id = ?
+            WHERE order_id = %s
             ORDER BY id DESC
         """, (
             order_id,
@@ -907,7 +897,7 @@ def update_order_status(order_id):
         order = connection.execute("""
             SELECT *
             FROM orders
-            WHERE id = ?
+            WHERE id = %s
         """, (
             order_id,
         )).fetchone()
@@ -942,7 +932,7 @@ def update_order_status(order_id):
         items = connection.execute("""
             SELECT *
             FROM order_items
-            WHERE order_id = ?
+            WHERE order_id = %s
         """, (
             order_id,
         )).fetchall()
@@ -962,8 +952,8 @@ def update_order_status(order_id):
 
                 connection.execute("""
                     UPDATE products
-                    SET stock = stock + ?
-                    WHERE id = ?
+                    SET stock = stock + %s
+                    WHERE id = %s
                 """, (
                     item["quantity"],
                     item["product_id"]
@@ -991,8 +981,8 @@ def update_order_status(order_id):
 
         connection.execute("""
             UPDATE orders
-            SET status = ?
-            WHERE id = ?
+            SET status = %s
+            WHERE id = %s
         """, (
             new_status,
             order_id
@@ -1075,7 +1065,7 @@ def mark_payment_paid(order_id):
         order = connection.execute("""
             SELECT *
             FROM orders
-            WHERE id = ?
+            WHERE id = %s
         """, (
             order_id,
         )).fetchone()
@@ -1118,8 +1108,8 @@ def mark_payment_paid(order_id):
 
         connection.execute("""
             UPDATE orders
-            SET payment_status = ?
-            WHERE id = ?
+            SET payment_status = %s
+            WHERE id = %s
         """, (
             "Paid",
             order_id
@@ -1277,7 +1267,7 @@ def add_product():
                     description,
                     stock
                 )
-                VALUES (?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s)
             """, (
                 name,
                 price,
@@ -1331,7 +1321,7 @@ def edit_product(product_id):
         product = connection.execute("""
             SELECT *
             FROM products
-            WHERE id = ?
+            WHERE id = %s
         """, (
             product_id,
         )).fetchone()
@@ -1408,13 +1398,13 @@ def edit_product(product_id):
             connection.execute("""
                 UPDATE products
                 SET
-                    name = ?,
-                    price = ?,
-                    category = ?,
-                    image = ?,
-                    description = ?,
-                    stock = ?
-                WHERE id = ?
+                    name = %s,
+                    price = %s,
+                    category = %s,
+                    image = %s,
+                    description = %s,
+                    stock = %s
+                WHERE id = %s
             """, (
                 name,
                 price,
@@ -1465,7 +1455,7 @@ def toggle_product(product_id):
         product = connection.execute("""
             SELECT *
             FROM products
-            WHERE id = ?
+            WHERE id = %s
         """, (
             product_id,
         )).fetchone()
@@ -1477,8 +1467,8 @@ def toggle_product(product_id):
 
         connection.execute("""
             UPDATE products
-            SET active = ?
-            WHERE id = ?
+            SET active = %s
+            WHERE id = %s
         """, (
             new_active,
             product_id
@@ -1528,7 +1518,7 @@ def delete_product(product_id):
         product = connection.execute("""
             SELECT *
             FROM products
-            WHERE id = ?
+            WHERE id = %s
         """, (
             product_id,
         )).fetchone()
@@ -1546,7 +1536,7 @@ def delete_product(product_id):
         ordered = connection.execute("""
             SELECT id
             FROM order_items
-            WHERE product_id = ?
+            WHERE product_id = %s
             LIMIT 1
         """, (
             product_id,
@@ -1568,7 +1558,7 @@ def delete_product(product_id):
 
         connection.execute("""
             DELETE FROM products
-            WHERE id = ?
+            WHERE id = %s
         """, (
             product_id,
         ))
