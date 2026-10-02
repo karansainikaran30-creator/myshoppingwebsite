@@ -135,7 +135,6 @@ function updateCartCount() {
         totalQuantity;
 }
 
-
 // ============================================================
 // LOAD PRODUCTS
 // ============================================================
@@ -174,91 +173,12 @@ async function loadProducts() {
         validateCartStock();
 
 
-       displayProducts(products);
+        // Display products
+        displayProducts(products);
 
-       openProductFromURL();
-       
 
-       // ============================================================
-// OPEN PRODUCT FROM URL
-// Example:
-// https://myshoppingwebsite.onrender.com/?product=15
-// ============================================================
-
-function openProductFromURL() {
-
-    const urlParams = new URLSearchParams(
-        window.location.search
-    );
-
-    const productId =
-        urlParams.get("product");
-
-    if (!productId) {
-        return;
-    }
-
-    const product =
-        products.find(
-            item =>
-                Number(item.id) ===
-                Number(productId)
-        );
-
-    if (!product) {
-        console.warn(
-            "Product not found:",
-            productId
-        );
-
-        return;
-    }
-
-    openProductDetails(product.id);
-    // ============================================================
-// OPEN PRODUCT FROM URL
-// Example:
-// https://myshoppingwebsite.onrender.com/?product=12
-// ============================================================
-
-function openProductFromURL() {
-
-    const urlParams =
-        new URLSearchParams(
-            window.location.search
-        );
-
-    const productId =
-        urlParams.get("product");
-
-    // URL me product ID nahi hai
-    if (!productId) {
-        return;
-    }
-
-    // Product ko ID se find karo
-    const product =
-        products.find(
-            item =>
-                Number(item.id) ===
-                Number(productId)
-        );
-
-    // Product nahi mila
-    if (!product) {
-
-        console.warn(
-            "Product not found:",
-            productId
-        );
-
-        return;
-    }
-
-    // Product details popup open karo
-    openProductDetails(product.id);
-}
-}
+        // Check URL for direct product link
+        openProductFromURL();
 
     }
 
@@ -298,6 +218,70 @@ function openProductFromURL() {
     }
 }
 
+
+// ============================================================
+// OPEN PRODUCT FROM URL
+//
+// Example:
+// https://myshoppingwebsite.onrender.com/?product=15
+// ============================================================
+
+function openProductFromURL() {
+
+    const urlParams =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const productId =
+        urlParams.get("product");
+
+
+    console.log(
+        "Product ID from URL:",
+        productId
+    );
+
+
+    // No product parameter in URL
+    if (!productId) {
+        return;
+    }
+
+
+    // Find product
+    const product =
+        products.find(
+            item =>
+                Number(item.id) ===
+                Number(productId)
+        );
+
+
+    console.log(
+        "Product found:",
+        product
+    );
+
+
+    // Product does not exist
+    if (!product) {
+
+        console.warn(
+            "Product not found:",
+            productId
+        );
+
+        return;
+    }
+
+
+    // Open product details popup
+    openProductDetails(
+        product.id
+    );
+}
 
 // ============================================================
 // VALIDATE CART WITH DATABASE
