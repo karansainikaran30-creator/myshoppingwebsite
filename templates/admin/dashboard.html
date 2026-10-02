@@ -1907,29 +1907,37 @@
 
                             <div class="product-actions">
 
-                                <a
-                                    href="{{ url_for('edit_product', product_id=product.id) }}"
-                                    class="edit-btn"
-                                >
-                                    Edit
-                                </a>
+                            <a
+                               href="{{ url_for('edit_product', product_id=product.id) }}"
+                               class="edit-btn"
+    >
+                               Edit
+                               </a>
 
-                                <form
-                                    action="{{ url_for('toggle_product', product_id=product.id) }}"
-                                    method="POST"
-                                    style="display:inline;"
-                                    onsubmit="return confirm('{% if product.active %}Hide{% else %}Show{% endif %} this product?');"
-                                >
-                                    <button
-                                        type="submit"
-                                        class="{% if product.active %}delete-btn{% else %}edit-btn{% endif %}"
-                                        style="border:none; cursor:pointer;"
-                                    >
-                                        {% if product.active %}Hide{% else %}Show{% endif %}
+                               <button
+                                    type="button"
+                                    class="view-btn"
+                                     onclick="copyProductLink('{{ product.id }}')"
+    >
+                                    🔗 Copy Link
                                     </button>
-                                </form>
 
-                            </div>
+                                    <form
+                                      action="{{ url_for('toggle_product', product_id=product.id) }}"
+                                      method="POST"
+                                       style="display:inline;"
+                                         onsubmit="return confirm('{% if product.active %}Hide{% else %}Show{% endif %} this product?');"
+    >
+        <button
+            type="submit"
+            class="{% if product.active %}delete-btn{% else %}edit-btn{% endif %}"
+            style="border:none; cursor:pointer;"
+        >
+            {% if product.active %}Hide{% else %}Show{% endif %}
+        </button>
+    </form>
+
+</div>
 
                         </td>
 
@@ -2232,7 +2240,31 @@
         filterProducts();
     }
 
+     function copyProductLink(productId) {
 
+    const productLink =
+        window.location.origin +
+        "/?product=" +
+        productId;
+
+    navigator.clipboard.writeText(productLink)
+        .then(function () {
+
+            alert(
+                "✅ Product link copied!\n\n" +
+                productLink
+            );
+
+        })
+        .catch(function () {
+
+            prompt(
+                "Copy this product link:",
+                productLink
+            );
+
+        });
+}
 </script>
 
 
